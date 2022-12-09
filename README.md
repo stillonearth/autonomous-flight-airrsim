@@ -27,6 +27,17 @@ conda env create -f environment.yml
 conda activate airsim
 ```
 
+### Библиотека Estimator
+
+Реализация фильтра Калмана и визуальной одометрии [1] находится в библиотеке Estimator. Для установки библиотеки выполните следующие действия:
+
+```bash
+mkdir build
+cd build
+cmake -G 'Unix Makefiles' ..
+make
+```
+
 ## Математические модели
 
 ### Инерциальная система навигации
@@ -42,3 +53,7 @@ conda activate airsim
 ### Полевые испытания
 
 ## Выводы
+
+## Ссылки
+
+[1] Quadcopter State Estimation with Kalman Filtering in C++, 2018, https://github.com/cwiz/udacity-flying-car-cpp-estimation/blob/master/WRITEUP.md
