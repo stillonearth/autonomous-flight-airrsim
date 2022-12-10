@@ -1,10 +1,16 @@
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.4...3.18)
+project (estimator LANGUAGES CXX)
 
-project (estimator)
+find_package(Eigen3 REQUIRED)
 
-set(CMAKE_CXX_STANDARD 11)
+link_directories(${Eigen_INCLUDE_DIRS})
 
-message(STATUS ${PRIMEUTIL_LIB})
+add_subdirectory(pybind11)
+pybind11_add_module(estimator src/QuadEstimatorEKF.cpp src/BaseQuadEstimator.cpp src/Utility/SimpleConfig.cpp)
 
-add_library(estimator SHARED  src/QuadEstimatorEKF.cpp src/BaseQuadEstimator.cpp src/Utility/SimpleConfig.cpp)
+target_link_libraries(estimator
+    ${Eigen_LIBRARIES}
+)
 
+target_compile_definitions(estimator
+                           PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})

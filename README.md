@@ -23,7 +23,7 @@ AirSim — свободный симулятор полета квадрокоп
 2. Создайте и активируйте окружение airsim
 
 ```bash
-conda env create -f environment.yml
+conda env create -f environment.yml python=3.10
 conda activate airsim
 ```
 
@@ -34,8 +34,9 @@ conda activate airsim
 ```bash
 mkdir build
 cd build
-cmake -G 'Unix Makefiles' ..
-make
+cmake ..
+cmake --build . --target estimator --config Release
+cmake --install .
 ```
 
 ## Математические модели

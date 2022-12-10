@@ -6,7 +6,7 @@
 using std::map;
 using std::vector;
 
-#include "../Eigen/Dense"
+#include <Eigen/Dense>
 using Eigen::MatrixXf;
 using Eigen::VectorXf;
 

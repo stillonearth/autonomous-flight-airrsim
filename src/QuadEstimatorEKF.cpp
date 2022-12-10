@@ -3,6 +3,10 @@
 #include "Utility/SimpleConfig.h"
 #include "Utility/StringUtils.h"
 #include "Math/Quaternion.h"
+#include "pybind11/pybind11.h"
+#include "pybind11/eigen.h"
+
+namespace py = pybind11;
 
 using namespace SLR;
 
@@ -378,113 +382,29 @@ float QuadEstimatorEKF::CovConditionNumber() const
 	return cond;
 }
 
-// Access functions for graphing variables
-bool QuadEstimatorEKF::GetData(const string &name, float &ret) const
+PYBIND11_MODULE(estimator, m)
 {
-	if (name.find_first_of(".") == string::npos)
-		return false;
-	string leftPart = LeftOf(name, '.');
-	string rightPart = RightOf(name, '.');
+	m.doc() = "This is a Python binding of C++ Kalman Filter State Estimation library";
 
-	if (ToUpper(leftPart) == ToUpper(_name))
-	{
-#define GETTER_HELPER(A, B)                         \
-	if (SLR::ToUpper(rightPart) == SLR::ToUpper(A)) \
-	{                                               \
-		ret = (B);                                  \
-		return true;                                \
-	}
-		GETTER_HELPER("Est.roll", rollEst);
-		GETTER_HELPER("Est.pitch", pitchEst);
+	py::class_<V3F>(m, "V3F")
+		.def(py::init<const float, const float, const float>())
+		.def_readonly("x", &V3F::x)
+		.def_readonly("y", &V3F::y)
+		.def_readonly("z", &V3F::z);
 
-		GETTER_HELPER("Est.x", ekfState(0));
-		GETTER_HELPER("Est.y", ekfState(1));
-		GETTER_HELPER("Est.z", ekfState(2));
-		GETTER_HELPER("Est.vx", ekfState(3));
-		GETTER_HELPER("Est.vy", ekfState(4));
-		GETTER_HELPER("Est.vz", ekfState(5));
-		GETTER_HELPER("Est.yaw", ekfState(6));
-
-		GETTER_HELPER("Est.S.x", sqrtf(ekfCov(0, 0)));
-		GETTER_HELPER("Est.S.y", sqrtf(ekfCov(1, 1)));
-		GETTER_HELPER("Est.S.z", sqrtf(ekfCov(2, 2)));
-		GETTER_HELPER("Est.S.vx", sqrtf(ekfCov(3, 3)));
-		GETTER_HELPER("Est.S.vy", sqrtf(ekfCov(4, 4)));
-		GETTER_HELPER("Est.S.vz", sqrtf(ekfCov(5, 5)));
-		GETTER_HELPER("Est.S.yaw", sqrtf(ekfCov(6, 6)));
-
-		// diagnostic variables
-		GETTER_HELPER("Est.D.AccelPitch", accelPitch);
-		GETTER_HELPER("Est.D.AccelRoll", accelRoll);
-
-		GETTER_HELPER("Est.D.ax_g", accelG[0]);
-		GETTER_HELPER("Est.D.ay_g", accelG[1]);
-		GETTER_HELPER("Est.D.az_g", accelG[2]);
-
-		GETTER_HELPER("Est.E.x", trueError(0));
-		GETTER_HELPER("Est.E.y", trueError(1));
-		GETTER_HELPER("Est.E.z", trueError(2));
-		GETTER_HELPER("Est.E.vx", trueError(3));
-		GETTER_HELPER("Est.E.vy", trueError(4));
-		GETTER_HELPER("Est.E.vz", trueError(5));
-		GETTER_HELPER("Est.E.yaw", trueError(6));
-		GETTER_HELPER("Est.E.pitch", pitchErr);
-		GETTER_HELPER("Est.E.roll", rollErr);
-		GETTER_HELPER("Est.E.MaxEuler", maxEuler);
-
-		GETTER_HELPER("Est.E.pos", posErrorMag);
-		GETTER_HELPER("Est.E.vel", velErrorMag);
-
-		GETTER_HELPER("Est.D.covCond", CovConditionNumber());
-#undef GETTER_HELPER
-	}
-	return false;
-};
-
-vector<string> QuadEstimatorEKF::GetFields() const
-{
-	vector<string> ret = BaseQuadEstimator::GetFields();
-	ret.push_back(_name + ".Est.roll");
-	ret.push_back(_name + ".Est.pitch");
-
-	ret.push_back(_name + ".Est.x");
-	ret.push_back(_name + ".Est.y");
-	ret.push_back(_name + ".Est.z");
-	ret.push_back(_name + ".Est.vx");
-	ret.push_back(_name + ".Est.vy");
-	ret.push_back(_name + ".Est.vz");
-	ret.push_back(_name + ".Est.yaw");
-
-	ret.push_back(_name + ".Est.S.x");
-	ret.push_back(_name + ".Est.S.y");
-	ret.push_back(_name + ".Est.S.z");
-	ret.push_back(_name + ".Est.S.vx");
-	ret.push_back(_name + ".Est.S.vy");
-	ret.push_back(_name + ".Est.S.vz");
-	ret.push_back(_name + ".Est.S.yaw");
-
-	ret.push_back(_name + ".Est.E.x");
-	ret.push_back(_name + ".Est.E.y");
-	ret.push_back(_name + ".Est.E.z");
-	ret.push_back(_name + ".Est.E.vx");
-	ret.push_back(_name + ".Est.E.vy");
-	ret.push_back(_name + ".Est.E.vz");
-	ret.push_back(_name + ".Est.E.yaw");
-	ret.push_back(_name + ".Est.E.pitch");
-	ret.push_back(_name + ".Est.E.roll");
-
-	ret.push_back(_name + ".Est.E.pos");
-	ret.push_back(_name + ".Est.E.vel");
-
-	ret.push_back(_name + ".Est.E.maxEuler");
-
-	ret.push_back(_name + ".Est.D.covCond");
-
-	// diagnostic variables
-	ret.push_back(_name + ".Est.D.AccelPitch");
-	ret.push_back(_name + ".Est.D.AccelRoll");
-	ret.push_back(_name + ".Est.D.ax_g");
-	ret.push_back(_name + ".Est.D.ay_g");
-	ret.push_back(_name + ".Est.D.az_g");
-	return ret;
-};
+	py::class_<QuadEstimatorEKF>(m, "QuadEstimatorEKF")
+		.def(py::init<const std::string &, const std::string &>())
+		.def("UpdateFromIMU", &QuadEstimatorEKF::UpdateFromIMU)
+		.def("UpdateTrueError", &QuadEstimatorEKF::UpdateTrueError)
+		.def("PredictState", &QuadEstimatorEKF::PredictState)
+		.def("UpdateFromGPS", &QuadEstimatorEKF::UpdateFromGPS)
+		.def("UpdateFromBaro", &QuadEstimatorEKF::UpdateFromBaro)
+		.def("UpdateFromMag", &QuadEstimatorEKF::UpdateFromMag)
+		.def("UpdateFromIMU", &QuadEstimatorEKF::UpdateFromIMU)
+		.def("EstimatedPosition", &QuadEstimatorEKF::EstimatedPosition)
+		.def("EstimatedVelocity", &QuadEstimatorEKF::EstimatedVelocity)
+		.def("EstimatedAttitude", &QuadEstimatorEKF::EstimatedAttitude)
+		.def("EstimatedOmega", &QuadEstimatorEKF::EstimatedOmega)
+		.def_readonly("ekfState", &QuadEstimatorEKF::ekfState)
+		.def_readonly("ekfCov", &QuadEstimatorEKF::ekfCov);
+}

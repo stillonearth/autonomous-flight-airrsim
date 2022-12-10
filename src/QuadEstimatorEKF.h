@@ -8,8 +8,8 @@ using matrix::Matrix;
 using matrix::SquareMatrix;
 using matrix::Vector;
 
-#include "Eigen/Dense"
-#include "Eigen/SVD"
+#include <Eigen/Dense>
+#include <Eigen/SVD>
 using Eigen::MatrixXf;
 using Eigen::VectorXf;
 
@@ -64,9 +64,6 @@ public:
 	float attitudeTau;
 	float dtIMU;
 
-	// Access functions for graphing variables
-	virtual bool GetData(const string &name, float &ret) const;
-	virtual vector<string> GetFields() const;
 	string _name;
 
 	// error vs ground truth (trueError = estimated-actual)
