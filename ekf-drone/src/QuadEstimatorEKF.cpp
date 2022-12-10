@@ -170,7 +170,7 @@ VectorXf QuadEstimatorEKF::PredictState(VectorXf curState, float dt, V3F accel, 
 	Quaternion<float> attitude = Quaternion<float>::FromEuler123_RPY(rollEst, pitchEst, curState(6));
 
 	V3F accelGlobal = attitude.Rotate_BtoI(accel);
-	accelGlobal[2] -= 9.81f;
+	// accelGlobal[2] -= 9.81f;
 
 	predictedState(0) += dt * ekfState(3);
 	predictedState(1) += dt * ekfState(4);
@@ -395,8 +395,10 @@ PYBIND11_MODULE(estimator, m)
 	py::class_<QuadEstimatorEKF>(m, "QuadEstimatorEKF")
 		.def(py::init<const std::string &, const std::string &>())
 		.def("UpdateFromIMU", &QuadEstimatorEKF::UpdateFromIMU)
+		.def("Init", &QuadEstimatorEKF::Init)
 		.def("UpdateTrueError", &QuadEstimatorEKF::UpdateTrueError)
 		.def("PredictState", &QuadEstimatorEKF::PredictState)
+		.def("Predict", &QuadEstimatorEKF::Predict)
 		.def("UpdateFromGPS", &QuadEstimatorEKF::UpdateFromGPS)
 		.def("UpdateFromBaro", &QuadEstimatorEKF::UpdateFromBaro)
 		.def("UpdateFromMag", &QuadEstimatorEKF::UpdateFromMag)
@@ -405,6 +407,6 @@ PYBIND11_MODULE(estimator, m)
 		.def("EstimatedVelocity", &QuadEstimatorEKF::EstimatedVelocity)
 		.def("EstimatedAttitude", &QuadEstimatorEKF::EstimatedAttitude)
 		.def("EstimatedOmega", &QuadEstimatorEKF::EstimatedOmega)
-		.def_readonly("ekfState", &QuadEstimatorEKF::ekfState)
-		.def_readonly("ekfCov", &QuadEstimatorEKF::ekfCov);
+		.def_readwrite("ekfState", &QuadEstimatorEKF::ekfState)
+		.def_readwrite("ekfCov", &QuadEstimatorEKF::ekfCov);
 }
