@@ -8,6 +8,8 @@ This library implements Extended Kalman Filter in C++ and python wrappers with p
 
 ## Installation
 
+### Windows
+
 ```bash
 mkdir build
 cd build
@@ -15,6 +17,8 @@ cmake ..
 cmake --build . --target estimator --config Release
 cmake --install .
 ```
+
+Copy pyd file to your python project.
 
 ## Config
 
