@@ -46,11 +46,11 @@ class DroneFlight:
         self.estimated_velocity = np.array([0, 0, 0])
         self.control_freq = (1. / 500.) * 1e9 
         self.flight_plan = [
-            np.array([-10, 0, -10]),
-            np.array([0, 10, 0]),
-            np.array([-10, 0, 0]),
-            np.array([0, -10, 0]),
-            np.array([0, 0, 10]),
+            # np.array([-1, 0, -1]),
+            # np.array([0, 1, 0]),
+            np.array([-1, 0, 0]),
+            np.array([0, -1, 0]),
+            np.array([0, 0, 1]),
         ]
         self.eps = 0.05
 
@@ -103,13 +103,12 @@ class DroneFlight:
                      
             self.update_state()
             
-            
             self.ekf.UpdateFromIMU(lin_acc, ang_acc)
             self.ekf.UpdateFromBaro(-height)
             self.ekf.Predict(0.002, lin_acc, ang_acc)
                
-            norm_delta = 2 * delta_x / np.linalg.norm(delta_x)
-            self.drone.move(norm_delta[0], norm_delta[1], norm_delta[2], 0.002)
+            norm_delta = 10 * ( delta_x / np.linalg.norm(delta_x) )
+            self.drone.move(norm_delta[0], norm_delta[1], norm_delta[2], 0.02)
             
             print(self.estimated_position, end_point)
             
@@ -121,6 +120,6 @@ flight.ekf.ekfState = np.zeros(6)
 
 # print("start plan")
 
-flight.execute_flight_program(np.array([0, 0.1, 0.0]))
+flight.execute_flight_program(np.array([0.5, 0.0, 0.0]))
 
 # print("end!")

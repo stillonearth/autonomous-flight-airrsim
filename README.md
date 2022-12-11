@@ -41,11 +41,9 @@ cmake --install .
 
 ## Математические модели
 
-### Инерциальная система навигации
+### Extended Kalman Filter
 
-### Визуальная одометрия
-
-### Senor Fusion с Фильтром Калмана
+[Wikipedia Article](https://en.wikipedia.org/wiki/Extended_Kalman_filter)
 
 ## Результаты
 
