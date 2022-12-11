@@ -33,7 +33,6 @@ Create filter configuration file `quad_estimator_ekf.txt` and place in directory
 import estimator
 
 ekf = estimator.QuadEstimatorEKF("quad_estimator_ekf.txt", "drone1")
-ekf.Init()
 
 dt = 0.002
 
@@ -42,8 +41,8 @@ lin_acc = estimator.V3F(0, 0, 0))
 ang_acc = estimator.V3F(1.0, 1.0, 1.0)
 
 # Feed IMU data to filter
-self.ekf.UpdateFromIMU(lin_acc, ang_acc)
-self.ekf.Predict(dt, lin_acc, ang_acc)
+ekf.UpdateFromIMU(lin_acc, ang_acc)
+ekf.Predict(dt, lin_acc, ang_acc)
 
 # Read state data from filter
 state = ekf.ekfState # 6x1 np.array
@@ -52,4 +51,4 @@ cov = ekf.ekfCov # 6x6 np.array
 
 ## Acknowledgements
 
-This filter was implemented by Udacity as part of Flying Car Course. The code was modified to be used as a library.
+This filter was implemented by Udacity as part of Flying Car Course. The code was modified to be used as a library. Original code can be found [here](https://github.com/udacity/FCND-Estimation-CPP).
